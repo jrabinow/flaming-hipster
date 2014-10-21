@@ -1,0 +1,75 @@
+DEPENDANCIES: libuuid pthreads
+
+Check includes/*.h for documentation on each function
+
+-------------------------------------------------------------------------------
+TODO:
+
+Implement correct error-checking for sending/receiving data. In particular, must
+solve this problem:
+"If the message is too long to pass atomically through the underlying protocol,
+the error EMSGSIZE is returned, and the message is not transmitted."
+To see list of possible errors and description
+man send
+
+Distinguish between status codes and data messages.
+Possibilities: 2 servers, 1 for codes, 1 for data. Easy to implement but
+need 2 servers instead of 1 => bleagh
+Send a TYPE byte with? before? each message. struct msghdr allows for control
+data to be sent along with each message.
+
+Implement multiple message passing.
+man sendmsg
+man recvmsg
+man readv (for struct iovec)
+
+Implement sending files
+man sendfile
+
+Investigate MSG_MORE and MSG_NOSIGNAL flags
+man send
+
+Increase maximum number of file descriptors from 1024 (won't be able to have
+more than 1024 neighbors otherwise)
+https://stackoverflow.com/questions/848717/handling-more-than-1024-file-descriptors-in-c-on-linux
+
+Use epoll (or kqueue) to monitor ready state for all sockets
+man epoll.*
+http://amsekharkernel.blogspot.com/2013/05/what-is-epoll-epoll-vs-select-call-and.html
+http://www.eecs.berkeley.edu/~sangjin/2012/12/21/epoll-vs-kqueue.html
+
+Implement a generic "worker thread" function that supervises a particular
+activity. Idea is to create one worker thread per activity (workload thread(s),
+monitor/modify number of peers according to needs, delegate reads, delegates
+writes, main supervisor thread (is this one necessary?))
+
+Figure out if it is possible to launch a new thread with arbitrary number of
+args (use structs creatively?)
+
+Work-oriented threading management
+Create pool of threads, store them in array. Have each thread waiting for "work"
+Started doing this but current approach will pose problems in future. There will
+be some tearing down to do here.
+
+Either add mutexes/semaphores everywhere necessary, or make program lock-free
+
+Local peer management: choice of data structures, sorting, etc
+man tsearch
+man hsearch
+man bsearch
+
+Investigate possibility of using thread IDs based on hashes of their IP address
+as opposed to libuuid. Advantages: one less dependancy + hopefully some memory
+gains
+
+THE BIG ONE (saving the best for last)
+Algorithm to distribute peers evenly among new nodes
+
+-------------------------------------------------------------------------------
+BUGS:
+
+Logging in color doesn't work
+
+Running with valgrind reveals memory leak in pthreads library. Must add code to
+make sure everything is correctly cleaned up before returning from main thread
+$ valgrind --leak-check=full --show-leak-kinds=all ./p2p
