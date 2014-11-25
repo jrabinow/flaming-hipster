@@ -46,7 +46,7 @@ typedef enum {
 
 /* Initialize log system on file stream. You MUST call this before calling
  * the log_message function */
-void init_log(FILE *stream);
+void init_log(FILE *stream, log_level_t loglevel);
 /* logs a message following printf conventions */
 void log_message(log_level_t level, const char *format, ... );
 
