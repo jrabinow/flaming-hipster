@@ -68,7 +68,6 @@ int create_server(unsigned port)
 		} else
 			log_message(LOG_INFO, "Server initialized on port %u", port);
 	}
-
 	return sockfd;
 }
 

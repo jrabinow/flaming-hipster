@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 	Node client;
 	pthread_t thread;
 
-	init_log(stderr);
+	init_log(stderr, LOG_DEBUG);
 /*	log_message(LOG_INFO, "Hello World!");
 	log_message(LOG_WARNING, "Hello World!");
 	log_message(LOG_ERROR, "Hello World!");
@@ -116,6 +116,7 @@ int main(int argc, char *argv[])
 	   thread = launch_thread(&worker_func_write, &server, DETACH_THREAD); //*/
 
 	/* prevent main() from exiting before other threads finish */
+	   pthread_exit(0);
 	 sleep(1); //*/
 
 	cleanup();
